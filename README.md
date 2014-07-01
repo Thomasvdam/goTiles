@@ -6,9 +6,9 @@ Simple excercise to get back in the swing of things and to mess around with test
 
 ## Usage
 
-The `board.txt` file serves as the primary input method, since it beats having to write a million flags and is somewhat more user friendly than having to type some long obfuscated string with the details of the board. I might add the option for a CL argument string later though.  
+The `board.txt` file serves as the primary input method, since it beats having to write a million flags and is somewhat more user friendly than having to type some long obfuscated string with the details of the board. I might add the option for a CL argument string later though.
 The first line should contain the dimensions of the board, sperated by a single space: `width height`.
-The remaining lines all specify the details of a single tile type: `amount width height`.  
+The remaining lines all specify the details of a single tile type: `amount width height`.
 ```
 5 5
 1 3 3
