@@ -8,7 +8,7 @@ func main() {
 	
 	board, err := newBoard(nil)
 	if err != nil {
-		fmt.Println("readLines:", err)
+		fmt.Println("Something went wrong:", err)
 		return
 	}
 

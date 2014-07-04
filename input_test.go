@@ -12,13 +12,13 @@ func TestImportLines(t *testing.T) {
 
 	testOut, err := importLines("./test.txt")
 	if err != nil {
-		t.Errorf("readLines: %s", err)
+		t.Errorf("readLines: %s.", err)
 		return
 	}
 
 	for index, value := range out {
 		if value != testOut[index] {
-			t.Errorf("importLines() line %v = %v, want %v ", index, testOut[index], value)
+			t.Errorf("importLines() line %v = %v, want %v.", index, testOut[index], value)
 		}
 	}
 }
@@ -40,17 +40,17 @@ func TestConvertLines(t *testing.T) {
 	testWidth, testHeight, testOut := convertLines(in)
 
 	if testWidth != width {
-		t.Errorf("convertLines() width = %v, want %v", testWidth, width)
+		t.Errorf("convertLines() width = %v, want %v.", testWidth, width)
 	}
 
 	if testHeight != height {
-		t.Errorf("convertLines() height = %v, want %v", testHeight, height)		
+		t.Errorf("convertLines() height = %v, want %v.", testHeight, height)		
 	}
 
 	for tile, slice := range testOut {
 		for index, value := range slice {
 			if value != out[tile][index] {
-				t.Errorf("convertLines() tile %v = %v, want %v", tile, value, out[tile][index])
+				t.Errorf("convertLines() tile %v = %v, want %v.", tile, value, out[tile][index])
 			}
 		}
 	}

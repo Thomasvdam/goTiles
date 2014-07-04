@@ -4,20 +4,22 @@ import (
 	"fmt"
 )
 
+// Board struct which contains all the information about the problem.
 type Board struct {
-	width int
-	height int
+	width int // Width of the board.
+	height int // Height of the board.
 
-	stack [][]int
+	stack []*Tile // Stack of available tiles.
 }
 
 // An error type that details whether the board has too many
 // or too few tiles for its total area.
 type BoardError struct {
-	totalArea int
-	tileArea int
+	totalArea int // Height of the board * width of the board.
+	tileArea int // Combined area of all tiles.
 }
 
+// Implement the Error() method for the error interface.
 func (e *BoardError) Error() string {
 	if e.totalArea > e.tileArea {
 		return fmt.Sprintf("There are not enough tiles. Board area = %v, tile area = %v.", e.totalArea, e.tileArea)
@@ -26,23 +28,27 @@ func (e *BoardError) Error() string {
 	}
 }
 
-
 // Creates a new board from the strings passed and checks whether the
 // board is valid. If no slice is given as an argument the tiles.txt
 // file will be used instead. Error is nil when the board is valid.
 func newBoard(lines []string) (board *Board, err error) {
-
+	// Open tiles.txt file when no slice is passed as an argument.
 	if lines == nil {
-		// Open the tiles.txt file.
 		lines, err = importLines("./tiles.txt")
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	width, height, stack := convertLines(lines)
-	board = &Board{width, height, stack}
+	// Convert the strings to dimensions and a stack of tiles.
+	width, height, stackSlice := convertLines(lines)
+	stack, err := newStack(stackSlice)
+	if err != nil {
+		return nil, err
+	}
 
+	// Create the board and check for errors.
+	board = &Board{width, height, stack}
 	if err = board.valid(); err != nil {
 		return nil, err
 	}
@@ -56,9 +62,10 @@ func newBoard(lines []string) (board *Board, err error) {
 func (board *Board) valid() error {
 	totalArea := board.width * board.height
 
+	// Calculate total area of all tiles.
 	tileArea := 0
-	for _, value := range board.stack {
-		tileArea += value[0] * value[1] * value[2]
+	for _, tile := range board.stack {
+		tileArea += tile.amount * tile.width * tile.height
 	}
 
 	if totalArea != tileArea {
