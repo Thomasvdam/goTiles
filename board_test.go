@@ -10,7 +10,7 @@ func TestValidNewBoard(t *testing.T) {
 	in[2] = "3 2 2"
 	in[3] = "4 1 1"
 
-	out := &Board{5, 5, []*Tile{&Tile{1, 3, 3}, &Tile{ 3, 2, 2}, &Tile{4, 1, 1}}}
+	out := &Board{&Grid{5, 5, nil}, []*Tile{&Tile{1, 3, 3}, &Tile{ 3, 2, 2}, &Tile{4, 1, 1}}}
 
 	testOut, err := newBoard(in)
 
@@ -19,12 +19,12 @@ func TestValidNewBoard(t *testing.T) {
 		return
 	}
 
-	if out.height != testOut.height {
-		t.Errorf("Height = %v, want %v.", testOut.height, out.height)
+	if out.grid.height != testOut.grid.height {
+		t.Errorf("Height = %v, want %v.", testOut.grid.height, out.grid.height)
 	}
 
-	if out.width != testOut.width {
-		t.Errorf("Width = %v, want %v.", testOut.width, out.width)
+	if out.grid.width != testOut.grid.width {
+		t.Errorf("Width = %v, want %v.", testOut.grid.width, out.grid.width)
 	}
 
 	for tileNo, value := range testOut.stack {

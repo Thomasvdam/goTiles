@@ -6,8 +6,7 @@ import (
 
 // Board struct which contains all the information about the problem.
 type Board struct {
-	width int // Width of the board.
-	height int // Height of the board.
+	grid *Grid // Current state of the grid and its dimensions.
 
 	stack []*Tile // Stack of available tiles.
 }
@@ -48,7 +47,7 @@ func newBoard(lines []string) (board *Board, err error) {
 	}
 
 	// Create the board and check for errors.
-	board = &Board{width, height, stack}
+	board = &Board{newGrid(width, height), stack}
 	if err = board.valid(); err != nil {
 		return nil, err
 	}
@@ -60,7 +59,7 @@ func newBoard(lines []string) (board *Board, err error) {
 // the board. Returns nil when the board is valid, else it returns an
 // error describing the issue.
 func (board *Board) valid() error {
-	totalArea := board.width * board.height
+	totalArea := board.grid.width * board.grid.height
 
 	// Calculate total area of all tiles.
 	tileArea := 0
