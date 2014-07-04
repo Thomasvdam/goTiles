@@ -71,3 +71,110 @@ func TestInvalidBoards(t *testing.T) {
 		t.Errorf("Board should be nil, but was %v.", outBig)
 	}
 }
+
+// Test whether valid tile placement is handled correctly.
+func TestPlaceTilesValid(t *testing.T) {
+	in := make([]string, 4)
+	in[0] = "5 5"
+	in[1] = "1 3 3"
+	in[2] = "3 2 2"
+	in[3] = "4 1 1"
+
+	outBoard, err := newBoard(in)
+
+	board, err := newBoard(in)
+	if err != nil {
+		t.Errorf("Error should be nil, but was \"%v\".", err)
+		return
+	}
+
+	if !board.placeTile(board.stack[0]) {
+		t.Errorf("First tile was not placed while it should have been.")
+	}
+
+	if outBoard.stack[0].amount != board.stack[0].amount + 1 {
+		t.Errorf("The tile amount should decrease by one, but it did not.")
+	}
+
+	// Create a grid with a 3x3 tile placed in the uppermost left corner.
+	outGrid := newGrid(5, 5)
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 3; j++ {
+			outGrid.grid[i][j] = true
+		}
+	}
+
+	// Compare grids.
+	for x, row := range board.grid.grid {
+		for y, value := range row {
+			if value != outGrid.grid[x][y] {
+				t.Errorf("Gridpoint (%v, %v) should be %v, but was %v.", x, y, outGrid.grid[x][y], value)
+			}
+		}
+	}
+
+	// Place a second tile.
+	if !board.placeTile(board.stack[1]) {
+		t.Errorf("Second tile was not placed while it should have been.")
+	}
+
+	if outBoard.stack[1].amount != board.stack[1].amount + 1 {
+		t.Errorf("The tile amount should decrease by one, but it did not.")
+	}
+
+	// Place a 2x2 tile under the 3x3 tile.
+	outGrid.grid[0][4], outGrid.grid[1][4], outGrid.grid[0][3], outGrid.grid[1][3] = true, true, true, true
+
+	// Compare grids.
+	for x, row := range board.grid.grid {
+		for y, value := range row {
+			if value != outGrid.grid[x][y] {
+				t.Errorf("Gridpoint (%v, %v) should be %v, but was %v.", x, y, outGrid.grid[x][y], value)
+			}
+		}
+	}
+}
+
+// Test whether invalid tile placement is handled correctly.
+func TestPlaceTilesInvalid(t *testing.T) {
+	in := make([]string, 4)
+	in[0] = "5 5"
+	in[1] = "2 3 3"
+	in[2] = "1 2 2"
+	in[3] = "3 1 1"
+
+	outBoard, err := newBoard(in)
+	outBoard.stack[0].amount--
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 3; j++ {
+			outBoard.grid.grid[i][j] = true
+		}
+	}
+
+	board, err := newBoard(in)
+	if err != nil {
+		t.Errorf("Error should be nil, but was \"%v\".", err)
+		return
+	}
+
+	if !board.placeTile(board.stack[0]) {
+		t.Errorf("First tile was not placed while it should have been.")
+	}
+
+	if board.placeTile(board.stack[0]) {
+		t.Errorf("Second tile was placed while it should not have been.")
+	}
+
+	if board.stack[0].amount != board.stack[0].amount {
+		t.Errorf("The tile amount should remain the same, but it did not.")
+	}
+
+	// Compare grids.
+	for x, row := range board.grid.grid {
+		for y, value := range row {
+			if value != outBoard.grid.grid[x][y] {
+				t.Errorf("Gridpoint (%v, %v) should be %v, but was %v.", x, y, outBoard.grid.grid[x][y], value)
+			}
+		}
+	}
+}

@@ -73,3 +73,34 @@ func (board *Board) valid() error {
 
 	return nil
 }
+
+// Attempt to place the passed tile in the leftmost upper corner. Returns
+// false and revert the board to it's original state when not successful,
+// returns true and updates the board when successful.
+func (b *Board) placeTile(tile *Tile) bool {
+	x, y := b.grid.findPlace()
+
+	// Check whether the tile will fit.
+	if x + tile.width > b.grid.width || y + tile.height > b.grid.height {
+		return false
+	}
+
+	// Check whether the tile will not overlap.
+	for i := 0; i < tile.width; i++ {
+		for j := 0; j < tile.height; j++ {
+			if b.grid.grid[x + i][y + j] {
+				return false
+			}
+		}
+	}
+
+	// Place tile and remove it from the stack.
+	tile.amount--
+	for i := 0; i < tile.width; i++ {
+		for j := 0; j < tile.height; j++ {
+			b.grid.grid[x + i][y + j] = true
+		}
+	}
+
+	return true
+}

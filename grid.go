@@ -20,3 +20,16 @@ func newGrid(width, height int) *Grid {
 
 	return grid
 }
+
+// Find the leftmost upper corner that is free.
+func (g *Grid) findPlace() (int, int) {
+	for x, collumn := range g.grid {
+		for y, value := range collumn {
+			if !value {
+				return x, y
+			}
+		}
+	}
+	
+	return g.width, g.height
+}
