@@ -1,135 +1,100 @@
 package main
 
-import "testing"
+import (
+	"testing"
+	"github.com/stretchr/testify/assert"
+)
 
 // Test whether a valid board is created correctly.
 func TestValidNewBoard(t *testing.T) {
-	in := make([]string, 4)
-	in[0] = "5 5"
-	in[1] = "1 3 3"
-	in[2] = "3 2 2"
-	in[3] = "4 1 1"
 
-	out := &Board{&Grid{5, 5, nil}, []*Tile{&Tile{1, 3, 3}, &Tile{ 3, 2, 2}, &Tile{4, 1, 1}}}
+	testOut, err := newBoard(boardStringSlice)
 
-	testOut, err := newBoard(in)
+	if assert.Nil(t, err) {
 
-	if err != nil {
-		t.Errorf("Error should be nil, but was \"%v\".", err)
-		return
-	}
+		assert.Equal(t, testOut.grid.width, boardLiteral.grid.width, "They should be equal.")
+		assert.Equal(t, testOut.grid.height, boardLiteral.grid.height, "They should be equal.")
 
-	if out.grid.height != testOut.grid.height {
-		t.Errorf("Height = %v, want %v.", testOut.grid.height, out.grid.height)
-	}
-
-	if out.grid.width != testOut.grid.width {
-		t.Errorf("Width = %v, want %v.", testOut.grid.width, out.grid.width)
-	}
-
-	for tileNo, value := range testOut.stack {
-		if value.amount != out.stack[tileNo].amount || value.width != out.stack[tileNo].width || value.height != out.stack[tileNo].height {
-			t.Errorf("Tile %v = %v, %v, %v, want %v, %v, %v.", tileNo, value.amount, value.width, value.height, out.stack[tileNo].amount, out.stack[tileNo].width, out.stack[tileNo].height)
+		for tileNo, value := range boardLiteral.stack {
+			assert.Equal(t, testOut.stack[tileNo].amount, value.amount, "They should be equal.")
+			assert.Equal(t, testOut.stack[tileNo].width, value.width, "They should be equal.")
+			assert.Equal(t, testOut.stack[tileNo].height, value.height, "They should be equal.")
 		}
 	}
 }
 
 // Test whether an invalid board returns the correct error.
 func TestInvalidBoards(t *testing.T) {
-	inSmall := make([]string, 4)
-	inSmall[0] = "9 9"
-	inSmall[1] = "1 3 3"
-	inSmall[2] = "3 2 2"
-
-	inBig := make([]string, 4)
-	inBig[0] = "5 5"
-	inBig[1] = "5 3 3"
-	inBig[2] = "5 2 2"
-	inBig[3] = "5 1 1"
+	var inSmall = []string{
+		"9 9",
+		"1 3 3",
+		"3 2 2",
+	}
 
 	outSmall, errSmall := newBoard(inSmall)
-	if errSmall == nil {
-		t.Errorf("No error occurred while there were not enough tiles.")
-	} else if berr, ok := errSmall.(*BoardError); ok {
-		if berr.totalArea <= berr.tileArea {
-			t.Errorf("The tile area should be smaller than %v, but it was %v.", berr.totalArea, berr.tileArea)
+	if assert.NotNil(t, errSmall) {
+		if berr, ok := errSmall.(*BoardError); ok {
+			// assert.Condition might be worthwhile here, but can't get it to work.
+			if berr.totalArea <= berr.tileArea {
+				t.Errorf("The tile area should be smaller than %v, but it was %v.", berr.totalArea, berr.tileArea)
+			}
 		}
 	}
-	if outSmall != nil {
-		t.Errorf("Board should be nil, but was %v.", outSmall)
+	assert.Nil(t, outSmall)
+
+	var inBig = []string{
+		"5 5",
+		"5 3 3",
+		"5 2 2",
+		"5 1 1",
 	}
 
 	outBig, errBig := newBoard(inBig)
-	if errBig == nil {
-		t.Errorf("No error occurred while there were too many tiles.")
-	} else if berr, ok := errBig.(*BoardError); ok {
-		if berr.totalArea >= berr.tileArea {
-			t.Errorf("The tile area should be smaller than %v, but it was %v.", berr.totalArea, berr.tileArea)
+	if assert.NotNil(t, errBig) {
+		if berr, ok := errBig.(*BoardError); ok {
+			// assert.Condition might be worthwhile here, but can't get it to work.
+			if berr.totalArea >= berr.tileArea {
+				t.Errorf("The tile area should be smaller than %v, but it was %v.", berr.totalArea, berr.tileArea)
+			}
 		}
 	}
-	if outBig != nil {
-		t.Errorf("Board should be nil, but was %v.", outBig)
-	}
+	assert.Nil(t, outBig)
 }
 
 // Test whether valid tile placement is handled correctly.
 func TestPlaceTilesValid(t *testing.T) {
-	in := make([]string, 4)
-	in[0] = "5 5"
-	in[1] = "1 3 3"
-	in[2] = "3 2 2"
-	in[3] = "4 1 1"
+	testBoard, err := newBoard(boardStringSlice)
 
-	outBoard, err := newBoard(in)
+	if assert.Nil(t, err) {
+		assert.True(t, testBoard.placeTile(testBoard.stack[0]))
+		assert.Equal(t, testBoard.stack[0].amount + 1, boardLiteral.stack[0].amount, "Amount should decrease by 1.")
 
-	board, err := newBoard(in)
-	if err != nil {
-		t.Errorf("Error should be nil, but was \"%v\".", err)
-		return
-	}
-
-	if !board.placeTile(board.stack[0]) {
-		t.Errorf("First tile was not placed while it should have been.")
-	}
-
-	if outBoard.stack[0].amount != board.stack[0].amount + 1 {
-		t.Errorf("The tile amount should decrease by one, but it did not.")
-	}
-
-	// Create a grid with a 3x3 tile placed in the uppermost left corner.
-	outGrid := newGrid(5, 5)
-	for i := 0; i < 3; i++ {
-		for j := 0; j < 3; j++ {
-			outGrid.grid[i][j] = true
+		var literalGrid = Grid{
+			[]bool{true, true, true, false, false},
+			[]bool{true, true, true, false, false},
+			[]bool{true, true, true, false, false},
+			[]bool{false, false, false, false, false},
+			[]bool{false, false, false, false, false},
 		}
-	}
 
-	// Compare grids.
-	for x, row := range board.grid.grid {
-		for y, value := range row {
-			if value != outGrid.grid[x][y] {
-				t.Errorf("Gridpoint (%v, %v) should be %v, but was %v.", x, y, outGrid.grid[x][y], value)
+		// Compare grids.
+		for x, row := range literalGrid {
+			for y, value := range row {
+				assert.Equal(t, testBoard.grid[x][y], value, "They should be equal.")
 			}
 		}
-	}
 
-	// Place a second tile.
-	if !board.placeTile(board.stack[1]) {
-		t.Errorf("Second tile was not placed while it should have been.")
-	}
+		// Place a second tile.
+		assert.True(t, testBoard.placeTile(testBoard.stack[1]))
+		assert.Equal(t, testBoard.stack[1].amount + 1, boardLiteral.stack[1].amount, "Amount should decrease by 1.")
 
-	if outBoard.stack[1].amount != board.stack[1].amount + 1 {
-		t.Errorf("The tile amount should decrease by one, but it did not.")
-	}
+		// Place a 2x2 tile under the 3x3 tile.
+		literalGrid[0][4], literalGrid[1][4], literalGrid[0][3], literalGrid[1][3] = true, true, true, true
 
-	// Place a 2x2 tile under the 3x3 tile.
-	outGrid.grid[0][4], outGrid.grid[1][4], outGrid.grid[0][3], outGrid.grid[1][3] = true, true, true, true
-
-	// Compare grids.
-	for x, row := range board.grid.grid {
-		for y, value := range row {
-			if value != outGrid.grid[x][y] {
-				t.Errorf("Gridpoint (%v, %v) should be %v, but was %v.", x, y, outGrid.grid[x][y], value)
+		// Compare grids.
+		for x, row := range literalGrid {
+			for y, value := range row {
+				assert.Equal(t, testBoard.grid[x][y], value, "They should be equal.")
 			}
 		}
 	}
@@ -137,43 +102,32 @@ func TestPlaceTilesValid(t *testing.T) {
 
 // Test whether invalid tile placement is handled correctly.
 func TestPlaceTilesInvalid(t *testing.T) {
-	in := make([]string, 4)
-	in[0] = "5 5"
-	in[1] = "2 3 3"
-	in[2] = "1 2 2"
-	in[3] = "3 1 1"
 
-	outBoard, err := newBoard(in)
-	outBoard.stack[0].amount--
-	for i := 0; i < 3; i++ {
-		for j := 0; j < 3; j++ {
-			outBoard.grid.grid[i][j] = true
-		}
+	var literalGrid = Grid{
+		[]bool{true, true, true, false, false},
+		[]bool{true, true, true, false, false},
+		[]bool{true, true, true, false, false},
+		[]bool{false, false, false, false, false},
+		[]bool{false, false, false, false, false},
 	}
 
-	board, err := newBoard(in)
-	if err != nil {
-		t.Errorf("Error should be nil, but was \"%v\".", err)
-		return
-	}
+	testBoard, err := newBoard(boardStringSlice)
+	if assert.Nil(t, err) {
+		testBoard.stack[0].amount++
 
-	if !board.placeTile(board.stack[0]) {
-		t.Errorf("First tile was not placed while it should have been.")
-	}
+		assert.True(t, testBoard.placeTile(testBoard.stack[0]))
+		// There should be a nice before/after wrapper in testify.
+		amountBefore := testBoard.stack[0].amount
+		assert.False(t, testBoard.placeTile(testBoard.stack[0]))
+		amountAfter := testBoard.stack[0].amount
+		assert.Equal(t, amountBefore, amountAfter, "They should be equal.")
 
-	if board.placeTile(board.stack[0]) {
-		t.Errorf("Second tile was placed while it should not have been.")
-	}
-
-	if board.stack[0].amount != board.stack[0].amount {
-		t.Errorf("The tile amount should remain the same, but it did not.")
-	}
-
-	// Compare grids.
-	for x, row := range board.grid.grid {
-		for y, value := range row {
-			if value != outBoard.grid.grid[x][y] {
-				t.Errorf("Gridpoint (%v, %v) should be %v, but was %v.", x, y, outBoard.grid.grid[x][y], value)
+		// Compare grids.
+		for x, row := range literalGrid {
+			for y, value := range row {
+				if value != testBoard.grid[x][y] {
+					assert.Equal(t, testBoard.grid[x][y], value, "They should be equal.")
+				}
 			}
 		}
 	}

@@ -6,8 +6,7 @@ import (
 
 // Board struct which contains all the information about the problem.
 type Board struct {
-	grid *Grid // Current state of the grid and its dimensions.
-
+	grid Grid // Current state of the grid.
 	stack []*Tile // Stack of available tiles.
 }
 
@@ -59,7 +58,7 @@ func newBoard(lines []string) (board *Board, err error) {
 // the board. Returns nil when the board is valid, else it returns an
 // error describing the issue.
 func (board *Board) valid() error {
-	totalArea := board.grid.width * board.grid.height
+	totalArea := board.grid.width() * board.grid.height()
 
 	// Calculate total area of all tiles.
 	tileArea := 0
@@ -81,14 +80,14 @@ func (b *Board) placeTile(tile *Tile) bool {
 	x, y := b.grid.findPlace()
 
 	// Check whether the tile will fit.
-	if x + tile.width > b.grid.width || y + tile.height > b.grid.height {
+	if x + tile.width > b.grid.width() || y + tile.height > b.grid.height() {
 		return false
 	}
 
 	// Check whether the tile will not overlap.
 	for i := 0; i < tile.width; i++ {
 		for j := 0; j < tile.height; j++ {
-			if b.grid.grid[x + i][y + j] {
+			if b.grid[x + i][y + j] {
 				return false
 			}
 		}
@@ -98,7 +97,7 @@ func (b *Board) placeTile(tile *Tile) bool {
 	tile.amount--
 	for i := 0; i < tile.width; i++ {
 		for j := 0; j < tile.height; j++ {
-			b.grid.grid[x + i][y + j] = true
+			b.grid[x + i][y + j] = true
 		}
 	}
 

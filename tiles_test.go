@@ -1,27 +1,19 @@
 package main
 
-import "testing"
+import (
+	"testing"
+	"github.com/stretchr/testify/assert"
+)
 
 // Test whether a valid tile is created correctly.
 func TestValidNewTile(t *testing.T) {
 	const amount, width, height = 3, 4, 4
 
-	testOut, err := newTile(amount, width, height)
-	if err != nil {
-		t.Errorf("Error should be nil, but was \"%v\".", err)
-		return
-	}
-
-	if testOut.amount != amount {
-		t.Errorf("Amount = %v, want %v.")
-	}
-
-	if testOut.width != width {
-		t.Errorf("Width = %v, want %v.")
-	}
-
-	if testOut.height != height {
-		t.Errorf("Height = %v, want %v.")
+	testTile, err := newTile(amount, width, height)
+	if assert.Nil(t, err) {
+		assert.Equal(t, testTile.amount, amount, "They should be equal.")
+		assert.Equal(t, testTile.width, width, "They should be equal.")
+		assert.Equal(t, testTile.height, height, "They should be equal.")
 	}
 }
 
@@ -29,46 +21,27 @@ func TestValidNewTile(t *testing.T) {
 func TestInvalidNewTiles(t *testing.T) {
 	const wrong, good = -1, 1
 
-	testOut, err := newTile(wrong, good, good)
-	if err == nil {
-		t.Errorf("No error occurred while invalid parameters were passed: amount %v, width %v, height %v.", wrong, good, good)
-	}
-	if testOut != nil {
-		t.Errorf("Tile should be nil, but was %v.", testOut)
-	}
+	testTilewgg, err := newTile(wrong, good, good)
+	assert.NotNil(t, err)
+	assert.Nil(t, testTilewgg)
 
-	testOut, err = newTile(good, wrong, good)
-	if err == nil {
-		t.Errorf("No error occurred while invalid parameters were passed: amount %v, width %v, height %v.", good, wrong, good)
-	}
-	if testOut != nil {
-		t.Errorf("Tile should be nil, but was %v.", testOut)
-	}
+	testTilegwg, err := newTile(good, wrong, good)
+	assert.NotNil(t, err)
+	assert.Nil(t, testTilegwg)
 
-	testOut, err = newTile(good, good, wrong)
-	if err == nil {
-		t.Errorf("No error occurred while invalid parameters were passed: amount %v, width %v, height %v.", good, good, wrong)
-	}
-	if testOut != nil {
-		t.Errorf("Tile should be nil, but was %v.", testOut)
-	}
+	testTileggw, err := newTile(good, good, wrong)
+	assert.NotNil(t, err)
+	assert.Nil(t, testTileggw)
 }
 
 // Test whether a valid stack is created correctly.
 func TestValidNewStack(t *testing.T) {
-	in := make([][]int, 3)
-	in[0] = []int{1, 3, 3}
-	in[1] = []int{3, 2, 2}
-	in[2] = []int{4, 1, 1}
-
-	testOut, err := newStack(in)
-	if err != nil {
-		t.Errorf("Error should be nil, but was \"%v\".", err)
-	}
-
-	for index, value := range testOut {
-		if value.amount != in[index][0] || value.width != in[index][1] || value.height != in[index][2] {
-			t.Errorf("Tile %v = %v, %v, %v, want %v, %v, %v.", index, value.amount, value.width, value.height, in[index][0], in[index][1], in[index][2])
+	testStack, err := newStack(boardIntSlice)
+	if assert.Nil(t, err) {
+		for index, value := range boardLiteral.stack {
+			assert.Equal(t, testStack[index].amount, value.amount)
+			assert.Equal(t, testStack[index].width, value.width)
+			assert.Equal(t, testStack[index].height, value.height)
 		}
 	}
 }

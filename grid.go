@@ -1,29 +1,32 @@
 package main
 
-// Grid struct which contains the dimensions and a 2-dimensional slice
-// of bools.
-type Grid struct {
-	width int
-	height int
-
-	grid [][]bool
-}
+type Grid [][]bool
 
 // Creates a new 2-dimensional array of false bools based on the
 // dimensions passed.
-func newGrid(width, height int) *Grid {
-	grid := &Grid{width, height, make([][]bool, width)}
+func newGrid(width, height int) Grid {
+	grid := make([][]bool, width)
 
-	for index, _ := range grid.grid {
-		grid.grid[index] = make([]bool, height)
+	for index, _ := range grid {
+		grid[index] = make([]bool, height)
 	}
 
 	return grid
 }
 
+// Return the width of the grid as an int.
+func (g Grid) width() int {
+	return len(g)
+}
+
+// Return the height of the grid as an int.
+func (g Grid) height() int {
+	return len(g[0])
+}
+
 // Find the leftmost upper corner that is free.
-func (g *Grid) findPlace() (int, int) {
-	for x, collumn := range g.grid {
+func (g Grid) findPlace() (int, int) {
+	for x, collumn := range g {
 		for y, value := range collumn {
 			if !value {
 				return x, y
@@ -31,5 +34,5 @@ func (g *Grid) findPlace() (int, int) {
 		}
 	}
 	
-	return g.width, g.height
+	return len(g), len(g[0])
 }
