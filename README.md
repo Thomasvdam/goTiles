@@ -22,6 +22,7 @@ Will be interpreted as a 5x5 grid where 1 3x3, 3 2x2, and 4 1x1 tiles have to be
 * [x] Refactor the testing files. They're messy and clunky, it must be possible to streamline this.
 	* [x] Stuff literal vars in functions so they're not global.
 * [ ] Track tile placement.
+* [ ] Add backtracking.
 * [ ] Write the algorithm that places tiles.
 * [ ] Make it spawn several workers to speed up the process.
 

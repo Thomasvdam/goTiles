@@ -1,4 +1,4 @@
-package main
+package goTiles
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -11,9 +11,9 @@ func TestValidNewTile(t *testing.T) {
 
 	testTile, err := newTile(amount, width, height)
 	if assert.Nil(t, err) {
-		assert.Equal(t, testTile.amount, amount, "They should be equal.")
-		assert.Equal(t, testTile.width, width, "They should be equal.")
-		assert.Equal(t, testTile.height, height, "They should be equal.")
+		assert.Equal(t, amount, testTile.amount, "They should be equal.")
+		assert.Equal(t, width, testTile.width, "They should be equal.")
+		assert.Equal(t, height, testTile.height, "They should be equal.")
 	}
 }
 
@@ -41,9 +41,16 @@ func TestValidNewStack(t *testing.T) {
 	testStack, err := newStack(boardIntSlice())
 	if assert.Nil(t, err) {
 		for index, value := range boardLiteral.stack {
-			assert.Equal(t, testStack[index].amount, value.amount)
-			assert.Equal(t, testStack[index].width, value.width)
-			assert.Equal(t, testStack[index].height, value.height)
+			assert.Equal(t, value.amount, testStack[index].amount)
+			assert.Equal(t, value.width, testStack[index].width)
+			assert.Equal(t, value.height, testStack[index].height)
 		}
 	}
+}
+
+// Test whether the stack size is returned correctly.
+func TestStackSize(t *testing.T) {
+	boardLiteral := boardLiteral()
+
+	assert.Equal(t, 8, boardLiteral.stack.size(), "They should be equal.")
 }

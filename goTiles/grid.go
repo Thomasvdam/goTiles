@@ -1,4 +1,4 @@
-package main
+package goTiles
 
 type Grid [][]bool
 
@@ -33,6 +33,6 @@ func (g Grid) findPlace() (int, int) {
 			}
 		}
 	}
-	
+
 	return len(g), len(g[0])
 }

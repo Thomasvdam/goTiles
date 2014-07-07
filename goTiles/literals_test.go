@@ -1,5 +1,5 @@
 // Global testing variables that are useful for multiple tests.
-package main
+package goTiles
 
 // Slice containing strings of a valid board .txt file.
 func boardStringSlice() []string {
@@ -35,6 +35,7 @@ func emptyGrid() Grid {
 func boardLiteral() *Board {
 	return &Board{
 		emptyGrid(),
+		[]*Tile{nil, nil, nil, nil, nil, nil, nil, nil},
 		[]*Tile{
 			&Tile{1, 3, 3},
 			&Tile{3, 2, 2},

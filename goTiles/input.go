@@ -1,10 +1,10 @@
-package main
+package goTiles
 
 import (
-	"os"
 	"bufio"
-	"strings"
+	"os"
 	"strconv"
+	"strings"
 )
 
 // Open the specified file path and return a slice of its lines.
@@ -26,7 +26,7 @@ func importLines(path string) ([]string, error) {
 // Return the size of the board and a 2-dimensional slice
 // with the numerical values extracted from the strings.
 func convertLines(lines []string) (width, height int, stack [][]int) {
-	stack = make([][]int, len(lines) - 1)
+	stack = make([][]int, len(lines)-1)
 
 	tmpDimension := strings.Split(lines[0], " ")
 	width, _ = strconv.Atoi(tmpDimension[0])

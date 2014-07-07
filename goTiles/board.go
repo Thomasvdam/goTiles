@@ -1,4 +1,4 @@
-package main
+package goTiles
 
 import (
 	"fmt"
@@ -6,15 +6,16 @@ import (
 
 // Board struct which contains all the information about the problem.
 type Board struct {
-	grid Grid // Current state of the grid.
-	stack []*Tile // Stack of available tiles.
+	grid  Grid    // Current state of the grid.
+	path  []*Tile // List of tiles in the order they were placed.
+	stack Stack   // Stack of available tiles.
 }
 
 // An error type that details whether the board has too many
 // or too few tiles for its total area.
 type BoardError struct {
 	totalArea int // Height of the board * width of the board.
-	tileArea int // Combined area of all tiles.
+	tileArea  int // Combined area of all tiles.
 }
 
 // Implement the Error() method for the error interface.
@@ -29,7 +30,7 @@ func (e *BoardError) Error() string {
 // Creates a new board from the strings passed and checks whether the
 // board is valid. If no slice is given as an argument the tiles.txt
 // file will be used instead. Error is nil when the board is valid.
-func newBoard(lines []string) (board *Board, err error) {
+func NewBoard(lines []string) (board *Board, err error) {
 	// Open tiles.txt file when no slice is passed as an argument.
 	if lines == nil {
 		lines, err = importLines("./tiles.txt")
@@ -46,7 +47,7 @@ func newBoard(lines []string) (board *Board, err error) {
 	}
 
 	// Create the board and check for errors.
-	board = &Board{newGrid(width, height), stack}
+	board = &Board{newGrid(width, height), make([]*Tile, stack.size()), stack}
 	if err = board.valid(); err != nil {
 		return nil, err
 	}
@@ -80,14 +81,14 @@ func (b *Board) placeTile(tile *Tile) bool {
 	x, y := b.grid.findPlace()
 
 	// Check whether the tile will fit.
-	if x + tile.width > b.grid.width() || y + tile.height > b.grid.height() {
+	if x+tile.width > b.grid.width() || y+tile.height > b.grid.height() {
 		return false
 	}
 
 	// Check whether the tile will not overlap.
 	for i := 0; i < tile.width; i++ {
 		for j := 0; j < tile.height; j++ {
-			if b.grid[x + i][y + j] {
+			if b.grid[x+i][y+j] {
 				return false
 			}
 		}
@@ -97,7 +98,7 @@ func (b *Board) placeTile(tile *Tile) bool {
 	tile.amount--
 	for i := 0; i < tile.width; i++ {
 		for j := 0; j < tile.height; j++ {
-			b.grid[x + i][y + j] = true
+			b.grid[x+i][y+j] = true
 		}
 	}
 

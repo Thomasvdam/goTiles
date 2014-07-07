@@ -1,13 +1,15 @@
-package main
+package goTiles
 
 import (
 	"fmt"
 )
 
+type Stack []*Tile
+
 // Tile struct containing an amount, a width and a height.
 type Tile struct {
 	amount int
-	width int
+	width  int
 	height int
 }
 
@@ -25,7 +27,7 @@ func newTile(amount, width, height int) (tile *Tile, err error) {
 
 // Create a stack of tiles from the slice of integer slices passed.
 // Returns an error when a tile can't be created.
-func newStack(stackSlice [][]int) (stack []*Tile, err error) {
+func newStack(stackSlice [][]int) (stack Stack, err error) {
 	stack = make([]*Tile, len(stackSlice))
 	for index, tileSlice := range stackSlice {
 		stack[index], err = newTile(tileSlice[0], tileSlice[1], tileSlice[2])
@@ -34,5 +36,13 @@ func newStack(stackSlice [][]int) (stack []*Tile, err error) {
 		}
 	}
 
+	return
+}
+
+// Return the total amount of tiles in a stack.
+func (s Stack) size() (total int) {
+	for _, value := range s {
+		total += value.amount
+	}
 	return
 }

@@ -1,4 +1,4 @@
-package main
+package goTiles
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -9,17 +9,17 @@ import (
 func TestValidNewBoard(t *testing.T) {
 	boardLiteral := boardLiteral()
 
-	testOut, err := newBoard(boardStringSlice())
+	testOut, err := NewBoard(boardStringSlice())
 
 	if assert.Nil(t, err) {
 
-		assert.Equal(t, testOut.grid.width, boardLiteral.grid.width, "They should be equal.")
-		assert.Equal(t, testOut.grid.height, boardLiteral.grid.height, "They should be equal.")
+		assert.Equal(t, boardLiteral.grid.width, testOut.grid.width, "They should be equal.")
+		assert.Equal(t, boardLiteral.grid.height, testOut.grid.height, "They should be equal.")
 
 		for tileNo, value := range boardLiteral.stack {
-			assert.Equal(t, testOut.stack[tileNo].amount, value.amount, "They should be equal.")
-			assert.Equal(t, testOut.stack[tileNo].width, value.width, "They should be equal.")
-			assert.Equal(t, testOut.stack[tileNo].height, value.height, "They should be equal.")
+			assert.Equal(t, value.amount, testOut.stack[tileNo].amount, "They should be equal.")
+			assert.Equal(t, value.width, testOut.stack[tileNo].width, "They should be equal.")
+			assert.Equal(t, value.height, testOut.stack[tileNo].height, "They should be equal.")
 		}
 	}
 }
@@ -32,7 +32,7 @@ func TestInvalidBoards(t *testing.T) {
 		"3 2 2",
 	}
 
-	outSmall, errSmall := newBoard(inSmall)
+	outSmall, errSmall := NewBoard(inSmall)
 	if assert.NotNil(t, errSmall) {
 		if berr, ok := errSmall.(*BoardError); ok {
 			// assert.Condition might be worthwhile here, but can't get it to work.
@@ -50,7 +50,7 @@ func TestInvalidBoards(t *testing.T) {
 		"5 1 1",
 	}
 
-	outBig, errBig := newBoard(inBig)
+	outBig, errBig := NewBoard(inBig)
 	if assert.NotNil(t, errBig) {
 		if berr, ok := errBig.(*BoardError); ok {
 			// assert.Condition might be worthwhile here, but can't get it to work.
@@ -66,11 +66,11 @@ func TestInvalidBoards(t *testing.T) {
 func TestPlaceTilesValid(t *testing.T) {
 	boardLiteral := boardLiteral()
 
-	testBoard, err := newBoard(boardStringSlice())
+	testBoard, err := NewBoard(boardStringSlice())
 
 	if assert.Nil(t, err) {
 		assert.True(t, testBoard.placeTile(testBoard.stack[0]))
-		assert.Equal(t, testBoard.stack[0].amount+1, boardLiteral.stack[0].amount, "Amount should decrease by 1.")
+		assert.Equal(t, boardLiteral.stack[0].amount, testBoard.stack[0].amount+1, "Amount should decrease by 1.")
 
 		literalGrid := emptyGrid()
 		for i := 0; i < 3; i++ {
@@ -82,13 +82,13 @@ func TestPlaceTilesValid(t *testing.T) {
 		// Compare grids.
 		for x, row := range literalGrid {
 			for y, value := range row {
-				assert.Equal(t, testBoard.grid[x][y], value, "They should be equal.")
+				assert.Equal(t, value, testBoard.grid[x][y], "They should be equal.")
 			}
 		}
 
 		// Place a second tile.
 		assert.True(t, testBoard.placeTile(testBoard.stack[1]))
-		assert.Equal(t, testBoard.stack[1].amount+1, boardLiteral.stack[1].amount, "Amount should decrease by 1.")
+		assert.Equal(t, boardLiteral.stack[1].amount, testBoard.stack[1].amount+1, "Amount should decrease by 1.")
 
 		// Place a 2x2 tile under the 3x3 tile.
 		literalGrid[0][4], literalGrid[1][4], literalGrid[0][3], literalGrid[1][3] = true, true, true, true
@@ -96,7 +96,7 @@ func TestPlaceTilesValid(t *testing.T) {
 		// Compare grids.
 		for x, row := range literalGrid {
 			for y, value := range row {
-				assert.Equal(t, testBoard.grid[x][y], value, "They should be equal.")
+				assert.Equal(t, value, testBoard.grid[x][y], "They should be equal.")
 			}
 		}
 	}
@@ -112,7 +112,7 @@ func TestPlaceTilesInvalid(t *testing.T) {
 		}
 	}
 
-	testBoard, err := newBoard(boardStringSlice())
+	testBoard, err := NewBoard(boardStringSlice())
 	if assert.Nil(t, err) {
 		testBoard.stack[0].amount++
 
@@ -121,13 +121,13 @@ func TestPlaceTilesInvalid(t *testing.T) {
 		amountBefore := testBoard.stack[0].amount
 		assert.False(t, testBoard.placeTile(testBoard.stack[0]))
 		amountAfter := testBoard.stack[0].amount
-		assert.Equal(t, amountBefore, amountAfter, "They should be equal.")
+		assert.Equal(t, amountBefore, amountAfter, "They should not change.")
 
 		// Compare grids.
 		for x, row := range literalGrid {
 			for y, value := range row {
 				if value != testBoard.grid[x][y] {
-					assert.Equal(t, testBoard.grid[x][y], value, "They should be equal.")
+					assert.Equal(t, value, testBoard.grid[x][y], "They should be equal.")
 				}
 			}
 		}
