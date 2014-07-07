@@ -15,6 +15,7 @@ func TestValidNewBoard(t *testing.T) {
 
 		assert.Equal(t, boardLiteral.grid.width, testOut.grid.width, "They should be equal.")
 		assert.Equal(t, boardLiteral.grid.height, testOut.grid.height, "They should be equal.")
+		assert.Empty(t, testOut.path, "No tiles should have been placed yet.")
 
 		for tileNo, value := range boardLiteral.stack {
 			assert.Equal(t, value.amount, testOut.stack[tileNo].amount, "They should be equal.")
@@ -71,6 +72,7 @@ func TestPlaceTilesValid(t *testing.T) {
 	if assert.Nil(t, err) {
 		assert.True(t, testBoard.placeTile(testBoard.stack[0]))
 		assert.Equal(t, boardLiteral.stack[0].amount, testBoard.stack[0].amount+1, "Amount should decrease by 1.")
+		assert.Equal(t, 1, len(testBoard.path), "Pathlenght should increase by one.")
 
 		literalGrid := emptyGrid()
 		for i := 0; i < 3; i++ {
@@ -89,8 +91,9 @@ func TestPlaceTilesValid(t *testing.T) {
 		// Place a second tile.
 		assert.True(t, testBoard.placeTile(testBoard.stack[1]))
 		assert.Equal(t, boardLiteral.stack[1].amount, testBoard.stack[1].amount+1, "Amount should decrease by 1.")
+		assert.Equal(t, 2, len(testBoard.path), "Pathlenght should increase by one.")
 
-		// Place a 2x2 tile under the 3x3 tile.
+		// Place a 2x2 tile under the 3x3 tile in the comparison grid.
 		literalGrid[0][4], literalGrid[1][4], literalGrid[0][3], literalGrid[1][3] = true, true, true, true
 
 		// Compare grids.
@@ -118,17 +121,41 @@ func TestPlaceTilesInvalid(t *testing.T) {
 
 		assert.True(t, testBoard.placeTile(testBoard.stack[0]))
 		// There should be a nice before/after wrapper in testify.
-		amountBefore := testBoard.stack[0].amount
+		amountBefore := testBoard.stack.size
+		lenghtBefore := len(testBoard.path)
 		assert.False(t, testBoard.placeTile(testBoard.stack[0]))
-		amountAfter := testBoard.stack[0].amount
-		assert.Equal(t, amountBefore, amountAfter, "They should not change.")
+		amountAfter := testBoard.stack.size
+		lenghtAfter := len(testBoard.path)
+		assert.Equal(t, amountBefore, amountAfter, "They amount of tiles should not change.")
+		assert.Equal(t, lenghtBefore, lenghtAfter, "The path should not change.")
 
 		// Compare grids.
 		for x, row := range literalGrid {
 			for y, value := range row {
-				if value != testBoard.grid[x][y] {
-					assert.Equal(t, value, testBoard.grid[x][y], "They should be equal.")
-				}
+				assert.Equal(t, value, testBoard.grid[x][y], "They should be equal.")
+			}
+		}
+	}
+}
+
+// Test whether backtracking is handled correctly.
+func TestBacktrack(t *testing.T) {
+	boardLiteral := boardLiteral()
+
+	testBoard, err := NewBoard(boardStringSlice())
+
+	if assert.Nil(t, err) {
+		assert.True(t, testBoard.placeTile(testBoard.stack[0]))
+
+		testBoard.backtrack()
+
+		assert.Empty(t, testBoard.path, "Path should be empty.")
+		assert.Equal(t, boardLiteral.stack.size(), testBoard.stack.size(), "Both stacks should be equal.")
+		assert.Equal(t, boardLiteral.stack[0].amount, testBoard.stack[0].amount, "They should be equal.")
+
+		for x, row := range boardLiteral.grid {
+			for y, value := range row {
+				assert.Equal(t, value, testBoard.grid[x][y], "They should be equal.")
 			}
 		}
 	}

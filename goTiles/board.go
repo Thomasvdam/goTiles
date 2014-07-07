@@ -6,9 +6,9 @@ import (
 
 // Board struct which contains all the information about the problem.
 type Board struct {
-	grid  Grid    // Current state of the grid.
-	path  []*Tile // List of tiles in the order they were placed.
-	stack Stack   // Stack of available tiles.
+	grid  Grid  // Current state of the grid.
+	path  Path  // List of tiles in the order they were placed.
+	stack Stack // Stack of available tiles.
 }
 
 // An error type that details whether the board has too many
@@ -47,7 +47,7 @@ func NewBoard(lines []string) (board *Board, err error) {
 	}
 
 	// Create the board and check for errors.
-	board = &Board{newGrid(width, height), make([]*Tile, stack.size()), stack}
+	board = &Board{newGrid(width, height), newPath(stack.size()), stack}
 	if err = board.valid(); err != nil {
 		return nil, err
 	}
@@ -94,8 +94,9 @@ func (b *Board) placeTile(tile *Tile) bool {
 		}
 	}
 
-	// Place tile and remove it from the stack.
+	// Place tile, remove it from the stack, and add it to the path.
 	tile.amount--
+	b.path = append(b.path, Placement{x, y, tile})
 	for i := 0; i < tile.width; i++ {
 		for j := 0; j < tile.height; j++ {
 			b.grid[x+i][y+j] = true
@@ -103,4 +104,20 @@ func (b *Board) placeTile(tile *Tile) bool {
 	}
 
 	return true
+}
+
+// Undo the most recent move.
+func (b *Board) backtrack() {
+	lastTile := b.path[len(b.path)-1].tile
+	x := b.path[len(b.path)-1].x
+	y := b.path[len(b.path)-1].y
+
+	b.path = b.path[:len(b.path)-1]
+	lastTile.amount++
+
+	for i := 0; i < lastTile.width; i++ {
+		for j := 0; j < lastTile.height; j++ {
+			b.grid[x+i][y+j] = false
+		}
+	}
 }

@@ -35,7 +35,7 @@ func emptyGrid() Grid {
 func boardLiteral() *Board {
 	return &Board{
 		emptyGrid(),
-		[]*Tile{nil, nil, nil, nil, nil, nil, nil, nil},
+		make([]Placement, 0, 8),
 		[]*Tile{
 			&Tile{1, 3, 3},
 			&Tile{3, 2, 2},
