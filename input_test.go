@@ -1,14 +1,16 @@
 package main
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 // Test whether a text file can be opened and read correctly.
 func TestImportLines(t *testing.T) {
-	testOut, err := importLines("./test.txt")
-	
+	boardStringSlice := boardStringSlice()
+
+	testOut, err := importLines("./testFiles/test.txt")
+
 	if assert.Nil(t, err) {
 		for index, value := range boardStringSlice {
 			assert.Equal(t, testOut[index], value, "They should be equal.")
@@ -18,9 +20,10 @@ func TestImportLines(t *testing.T) {
 
 // Test wheter string slices are parsed correctly.
 func TestConvertLines(t *testing.T) {
+	boardIntSlice := boardIntSlice()
 	const width, height = 5, 5
 
-	testWidth, testHeight, testOut := convertLines(boardStringSlice)
+	testWidth, testHeight, testOut := convertLines(boardStringSlice())
 
 	assert.Equal(t, testWidth, width, "They should be equal.")
 	assert.Equal(t, testHeight, height, "They should be equal.")

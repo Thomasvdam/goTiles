@@ -1,14 +1,15 @@
 package main
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 // Test whether a valid board is created correctly.
 func TestValidNewBoard(t *testing.T) {
+	boardLiteral := boardLiteral()
 
-	testOut, err := newBoard(boardStringSlice)
+	testOut, err := newBoard(boardStringSlice())
 
 	if assert.Nil(t, err) {
 
@@ -63,18 +64,19 @@ func TestInvalidBoards(t *testing.T) {
 
 // Test whether valid tile placement is handled correctly.
 func TestPlaceTilesValid(t *testing.T) {
-	testBoard, err := newBoard(boardStringSlice)
+	boardLiteral := boardLiteral()
+
+	testBoard, err := newBoard(boardStringSlice())
 
 	if assert.Nil(t, err) {
 		assert.True(t, testBoard.placeTile(testBoard.stack[0]))
-		assert.Equal(t, testBoard.stack[0].amount + 1, boardLiteral.stack[0].amount, "Amount should decrease by 1.")
+		assert.Equal(t, testBoard.stack[0].amount+1, boardLiteral.stack[0].amount, "Amount should decrease by 1.")
 
-		var literalGrid = Grid{
-			[]bool{true, true, true, false, false},
-			[]bool{true, true, true, false, false},
-			[]bool{true, true, true, false, false},
-			[]bool{false, false, false, false, false},
-			[]bool{false, false, false, false, false},
+		literalGrid := emptyGrid()
+		for i := 0; i < 3; i++ {
+			for j := 0; j < 3; j++ {
+				literalGrid[i][j] = true
+			}
 		}
 
 		// Compare grids.
@@ -86,7 +88,7 @@ func TestPlaceTilesValid(t *testing.T) {
 
 		// Place a second tile.
 		assert.True(t, testBoard.placeTile(testBoard.stack[1]))
-		assert.Equal(t, testBoard.stack[1].amount + 1, boardLiteral.stack[1].amount, "Amount should decrease by 1.")
+		assert.Equal(t, testBoard.stack[1].amount+1, boardLiteral.stack[1].amount, "Amount should decrease by 1.")
 
 		// Place a 2x2 tile under the 3x3 tile.
 		literalGrid[0][4], literalGrid[1][4], literalGrid[0][3], literalGrid[1][3] = true, true, true, true
@@ -103,15 +105,14 @@ func TestPlaceTilesValid(t *testing.T) {
 // Test whether invalid tile placement is handled correctly.
 func TestPlaceTilesInvalid(t *testing.T) {
 
-	var literalGrid = Grid{
-		[]bool{true, true, true, false, false},
-		[]bool{true, true, true, false, false},
-		[]bool{true, true, true, false, false},
-		[]bool{false, false, false, false, false},
-		[]bool{false, false, false, false, false},
+	literalGrid := emptyGrid()
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 3; j++ {
+			literalGrid[i][j] = true
+		}
 	}
 
-	testBoard, err := newBoard(boardStringSlice)
+	testBoard, err := newBoard(boardStringSlice())
 	if assert.Nil(t, err) {
 		testBoard.stack[0].amount++
 

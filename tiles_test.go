@@ -1,8 +1,8 @@
 package main
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 // Test whether a valid tile is created correctly.
@@ -36,7 +36,9 @@ func TestInvalidNewTiles(t *testing.T) {
 
 // Test whether a valid stack is created correctly.
 func TestValidNewStack(t *testing.T) {
-	testStack, err := newStack(boardIntSlice)
+	boardLiteral := boardLiteral()
+
+	testStack, err := newStack(boardIntSlice())
 	if assert.Nil(t, err) {
 		for index, value := range boardLiteral.stack {
 			assert.Equal(t, testStack[index].amount, value.amount)

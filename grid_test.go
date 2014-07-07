@@ -1,8 +1,8 @@
 package main
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 // Test whether a new Grid has the correct dimensions and whether the
@@ -15,7 +15,6 @@ func TestNewGrid(t *testing.T) {
 	assert.Equal(t, testGrid.width(), dimension, "They should be equal.")
 	assert.Equal(t, testGrid.height(), dimension, "They should be equal.")
 
-
 	gridArea := 0
 	for x, row := range testGrid {
 		for y, value := range row {
@@ -24,11 +23,12 @@ func TestNewGrid(t *testing.T) {
 		}
 	}
 
-	assert.Equal(t, gridArea, dimension * dimension, "They should be equal.")
+	assert.Equal(t, gridArea, dimension*dimension, "They should be equal.")
 }
 
 // Test whether the leftmost upper corner can be found.
 func TestFindPlace(t *testing.T) {
+	emptyGrid := emptyGrid()
 
 	// Empty grid.
 	const emptyX, emptyY = 0, 0
@@ -37,28 +37,26 @@ func TestFindPlace(t *testing.T) {
 	assert.Equal(t, testEmptyY, emptyY, "They should be equal.")
 
 	// 3x3 tile on the grid.
-	var literalGrid = Grid{
-		[]bool{true, true, true, false, false},
-		[]bool{true, true, true, false, false},
-		[]bool{true, true, true, false, false},
-		[]bool{false, false, false, false, false},
-		[]bool{false, false, false, false, false},
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 3; j++ {
+			emptyGrid[i][j] = true
+		}
 	}
 
 	const oneTileX, oneTileY = 0, 3
-	testOneTileX, testOneTileY := literalGrid.findPlace()
+	testOneTileX, testOneTileY := emptyGrid.findPlace()
 	assert.Equal(t, testOneTileX, oneTileX, "They should be equal.")
 	assert.Equal(t, testOneTileY, oneTileY, "They should be equal.")
 
 	// Completely filled grid.
-	for x, row := range literalGrid {
+	for x, row := range emptyGrid {
 		for y, _ := range row {
-			literalGrid[x][y] = true
+			emptyGrid[x][y] = true
 		}
 	}
 
-	var fullX, fullY = literalGrid.width(), literalGrid.height()
-	testFullX, testFullY := literalGrid.findPlace()
+	var fullX, fullY = emptyGrid.width(), emptyGrid.height()
+	testFullX, testFullY := emptyGrid.findPlace()
 	assert.Equal(t, testFullX, fullX, "They should be equal.")
 	assert.Equal(t, testFullY, fullY, "They should be equal.")
 }
