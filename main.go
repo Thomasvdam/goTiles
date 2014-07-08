@@ -7,11 +7,9 @@ import (
 
 func main() {
 
-	board, err := goTiles.NewBoard(nil)
-	if err != nil {
-		fmt.Println("Something went wrong:", err)
-		return
-	}
+	results := goTiles.NewSolver(nil)
 
-	fmt.Println(board)
+	for value := range results {
+		fmt.Println(value)
+	}
 }

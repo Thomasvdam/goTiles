@@ -22,7 +22,7 @@ func newPath(size int) Path {
 func (p Path) String() string {
 	prettyPath := ""
 	for _, value := range p {
-		prettyPath += fmt.Sprintf("%vx%v, ", value.tile.width, value.tile.height)
+		prettyPath += fmt.Sprintf("%vx%v:(%v,%v) - ", value.tile.width, value.tile.height, value.x, value.y)
 	}
 	return prettyPath
 }

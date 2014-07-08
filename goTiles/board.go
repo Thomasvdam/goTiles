@@ -30,7 +30,7 @@ func (e *BoardError) Error() string {
 // Creates a new board from the strings passed and checks whether the
 // board is valid. If no slice is given as an argument the tiles.txt
 // file will be used instead. Error is nil when the board is valid.
-func NewBoard(lines []string) (board *Board, err error) {
+func newBoard(lines []string) (board *Board, err error) {
 	// Open tiles.txt file when no slice is passed as an argument.
 	if lines == nil {
 		lines, err = importLines("./tiles.txt")

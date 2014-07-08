@@ -9,7 +9,7 @@ import (
 func TestValidNewBoard(t *testing.T) {
 	boardLiteral := boardLiteral()
 
-	testOut, err := NewBoard(boardStringSlice())
+	testOut, err := newBoard(boardStringSlice())
 
 	if assert.Nil(t, err) {
 
@@ -33,7 +33,7 @@ func TestInvalidBoards(t *testing.T) {
 		"3 2 2",
 	}
 
-	outSmall, errSmall := NewBoard(inSmall)
+	outSmall, errSmall := newBoard(inSmall)
 	if assert.NotNil(t, errSmall) {
 		if berr, ok := errSmall.(*BoardError); ok {
 			// assert.Condition might be worthwhile here, but can't get it to work.
@@ -51,7 +51,7 @@ func TestInvalidBoards(t *testing.T) {
 		"5 1 1",
 	}
 
-	outBig, errBig := NewBoard(inBig)
+	outBig, errBig := newBoard(inBig)
 	if assert.NotNil(t, errBig) {
 		if berr, ok := errBig.(*BoardError); ok {
 			// assert.Condition might be worthwhile here, but can't get it to work.
@@ -67,7 +67,7 @@ func TestInvalidBoards(t *testing.T) {
 func TestPlaceTilesValid(t *testing.T) {
 	boardLiteral := boardLiteral()
 
-	testBoard, err := NewBoard(boardStringSlice())
+	testBoard, err := newBoard(boardStringSlice())
 
 	if assert.Nil(t, err) {
 		assert.True(t, testBoard.placeTile(testBoard.stack[0]))
@@ -115,7 +115,7 @@ func TestPlaceTilesInvalid(t *testing.T) {
 		}
 	}
 
-	testBoard, err := NewBoard(boardStringSlice())
+	testBoard, err := newBoard(boardStringSlice())
 	if assert.Nil(t, err) {
 		testBoard.stack[0].amount++
 
@@ -142,7 +142,7 @@ func TestPlaceTilesInvalid(t *testing.T) {
 func TestBacktrack(t *testing.T) {
 	boardLiteral := boardLiteral()
 
-	testBoard, err := NewBoard(boardStringSlice())
+	testBoard, err := newBoard(boardStringSlice())
 
 	if assert.Nil(t, err) {
 		assert.True(t, testBoard.placeTile(testBoard.stack[0]))

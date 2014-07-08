@@ -24,7 +24,7 @@ Will be interpreted as a 5x5 grid where 1 3x3, 3 2x2, and 4 1x1 tiles have to be
 * [x] Track tile placement.
 * [x] Add backtracking.
 * [ ] Write the algorithm that places tiles.
-* [ ] Make it spawn several workers to speed up the process.
+* [x] Make it spawn several workers to speed up the process.
 
 ## Thoughts
 
