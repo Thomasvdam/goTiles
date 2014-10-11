@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	results := goTiles.NewSolver(nil)
+	results := goTiles.NewSolver("tiles.txt")
 
 	for value := range results {
 		fmt.Println(value)
